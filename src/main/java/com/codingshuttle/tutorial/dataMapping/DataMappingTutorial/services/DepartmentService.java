@@ -27,53 +27,53 @@ public class DepartmentService {
         return departmentRepository.findById(id).orElse(null);
     }
 
-    public DepartmentEntity assignManagerToDepartment(Long departmentId, Long employeeId) {
-        Optional<DepartmentEntity> departmentEntity = departmentRepository.findById(departmentId);
-        Optional<EmployeeEntity> employeeEntity = employeeRepository.findById(employeeId);
+     public DepartmentEntity assignManagerToDepartment(Long deparmentId,Long employeeId){
+       Optional< DepartmentEntity> departmentEntity=departmentRepository.findById(deparmentId);
+        Optional<EmployeeEntity> employeeEntity=employeeRepository.findById(employeeId);
 
-        return departmentEntity.flatMap(department ->
-                employeeEntity.map(employee -> {
+        return departmentEntity.flatMap(department->
+                employeeEntity.map(employee->{
+//                    Direct Reference: In a one-to-one relationship, you typically keep a reference to the entire entity (EmployeeEntity) rather than just the ID. This allows you to leverage the relationships defined by JPA/Hibernate.
                     department.setManager(employee);
                     return departmentRepository.save(department);
                 })).orElse(null);
-    }
 
-    public DepartmentEntity getAssignedDepartmentOfManager(Long employeeId) {
-//        Optional<EmployeeEntity> employeeEntity = employeeRepository.findById(employeeId);
-//        return employeeEntity.map(employee-> employee.getManagedDepartment()).orElse(null);
+     }
 
-        EmployeeEntity employeeEntity = EmployeeEntity.builder().id(employeeId).build();
-
-        return departmentRepository.findByManager(employeeEntity);
-    }
+     public DepartmentEntity getAssignedDepartmentOfmanager(Long employeeId){
+        Optional<EmployeeEntity> employeeEntity=employeeRepository.findById(employeeId);
+        return departmentRepository.findByManager(employeeEntity.get());
+     }
 
     public DepartmentEntity assignWorkerToDepartment(Long departmentId, Long employeeId) {
-        Optional<DepartmentEntity> departmentEntity = departmentRepository.findById(departmentId);
-        Optional<EmployeeEntity> employeeEntity = employeeRepository.findById(employeeId);
+          Optional<DepartmentEntity >  departmentEntity=departmentRepository.findById(departmentId);
+          Optional<EmployeeEntity>  employeeEntity=employeeRepository.findById(employeeId);
 
-        return departmentEntity.flatMap(department ->
-                employeeEntity.map(employee -> {
-                    employee.setWorkerDepartment(department);
-                    employeeRepository.save(employee);
+          return departmentEntity.flatMap(department->
+                  employeeEntity.map(employee->{
+                              employee.setWorkerDepartment(department);
+                              employeeRepository.save(employee);
+                              department.getWorkers().add(employee);
+                              return department;
 
-                    department.getWorkers().add(employee);
-                    return department;
-                })).orElse(null);
+                          })).orElse(null);
     }
 
     public DepartmentEntity assignFreelancerToDepartment(Long departmentId, Long employeeId) {
-        Optional<DepartmentEntity> departmentEntity = departmentRepository.findById(departmentId);
-        Optional<EmployeeEntity> employeeEntity = employeeRepository.findById(employeeId);
+        Optional<DepartmentEntity >  departmentEntity=departmentRepository.findById(departmentId);
+        Optional<EmployeeEntity>  employeeEntity=employeeRepository.findById(employeeId);
 
-        return departmentEntity.flatMap(department ->
-                employeeEntity.map(employee -> {
-
+        return departmentEntity.flatMap(department->
+                employeeEntity.map(employee->{
                     employee.getFreelanceDepartments().add(department);
                     employeeRepository.save(employee);
+                   department.getFreelancers().add(employee);
+//                   departmentRepository.save(department);
+                   return department;
 
-                    department.getFreelancers().add(employee);
-                    return department;
+
                 })).orElse(null);
+
     }
 }
 

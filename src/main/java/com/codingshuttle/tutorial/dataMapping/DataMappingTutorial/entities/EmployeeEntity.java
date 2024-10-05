@@ -23,33 +23,26 @@ public class EmployeeEntity {
     @Column(nullable = false)
     private String name;
 
-    @OneToOne(mappedBy = "manager")
-    @JsonIgnore
+@OneToOne(mappedBy = "manager")
+//Here, mappedBy = "manager" indicates that EmployeeEntity does not own the relationship.
+// Instead, the manager field in DepartmentEntity owns it. This is crucial for JPA to understand how to manage the relationship,
+// especially when it comes to persisting and fetching data.
+@JsonIgnore
     private DepartmentEntity managedDepartment;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-//    @JoinColumn(name = "worker_department_id")
-    @JoinTable(name = "worker_department_mapping")
-    @JsonIgnore
-    private DepartmentEntity workerDepartment;
+@ManyToOne(cascade = CascadeType.ALL)
+//as many employee can work in single department
+//and EmployeeEntity is the owner of the relationship as it has the foregin key
+@JoinColumn(name="worker_department_id",referencedColumnName = "id")
+@JsonIgnore
+private DepartmentEntity workerDepartment;
 
-    @ManyToMany
-    @JoinTable(name = "freelancer_department_mapping",
-            joinColumns = @JoinColumn(name = "employee_id"),
-            inverseJoinColumns = @JoinColumn(name = "department_id")
-    )
-    @JsonIgnore
-    private Set<DepartmentEntity> freelanceDepartments;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof EmployeeEntity that)) return false;
-        return Objects.equals(getId(), that.getId()) && Objects.equals(getName(), that.getName());
-    }
+@ManyToMany
+@JoinTable(name="freelancer_department_mapping",joinColumns = @JoinColumn(name="employee_id"),
+ inverseJoinColumns = @JoinColumn(name="department_id"))
+@JsonIgnore
+private Set<DepartmentEntity>  freelanceDepartments;
+//as a freelancer can work in multiple departments
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(getId(), getName());
-    }
 }

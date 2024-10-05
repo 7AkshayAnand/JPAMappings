@@ -20,26 +20,18 @@ public class DepartmentEntity {
 
     @Column(nullable = false)
     private String title;
-
     @OneToOne
-    @JoinColumn(name = "department_manager")
+//    it will automatically takes id column of EmployeeEntity as foregin key
+    @JoinColumn(name="departments_manager")
     private EmployeeEntity manager;
 
-    @OneToMany(mappedBy = "workerDepartment", fetch = FetchType.LAZY)
-    private Set<EmployeeEntity> workers;
+  @OneToMany(mappedBy = "workerDepartment", fetch=FetchType.LAZY)
+// mappedBy tells that workerDepartment in the EmployeeEntity is owner of this relationship
+//  as it has the foreign key
 
-    @ManyToMany(mappedBy = "freelanceDepartments")
-    private Set<EmployeeEntity> freelancers;
+  private Set<EmployeeEntity> workers;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof DepartmentEntity that)) return false;
-        return Objects.equals(getId(), that.getId()) && Objects.equals(getTitle(), that.getTitle());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getId(), getTitle());
-    }
+  @ManyToMany(mappedBy = "freelanceDepartments")
+  private Set<EmployeeEntity>  freelancers;
+//  as one department has multiple freelancers
 }
